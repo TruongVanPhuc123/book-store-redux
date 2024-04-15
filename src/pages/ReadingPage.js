@@ -4,53 +4,55 @@ import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../apiService";
+import { useDispatch, useSelector } from "react-redux";
+import { getFavorites, setRemovedBook } from "../app/Slice";
 
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const ReadingPage = () => {
-  const [books, setBooks] = useState([]);
+  const [bookID, setBookID] = useState('');
+  console.log(bookID)
+  const books = useSelector(state => state.book.readingList)
   const [loading, setLoading] = useState(false);
-  const [removedBookId, setRemovedBookId] = useState("");
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleClickBook = (bookId) => {
     navigate(`/books/${bookId}`);
   };
 
   const removeBook = (bookId) => {
-    setRemovedBookId(bookId);
+    setLoading(true)
+    try {
+      dispatch(setRemovedBook(bookId));
+      toast.success("The book has been removed");
+    } catch (error) {
+      toast(error.message);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (removedBookId) return;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/favorites`);
-        setBooks(res.data);
-      } catch (error) {
-        toast(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [removedBookId]);
+    setLoading(true);
+    try {
+      dispatch(getFavorites())
+      // setBooks(bookFavorites); 
+    } catch (error) {
+      toast(error.message);
+    }
+    setLoading(false);
+  }, [dispatch]);
 
-  useEffect(() => {
-    if (!removedBookId) return;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        await api.delete(`/favorites/${removedBookId}`);
-        toast.success("The book has been removed");
-        setRemovedBookId("");
-      } catch (error) {
-        toast(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [removedBookId]);
+  // useEffect(() => {
+  //   setLoading(true)
+  //   try {
+  //     dispatch(setRemovedBook(bookID));
+  //     toast.success("The book has been removed");
+  //   } catch (error) {
+  //     toast(error.message);
+  //   }
+  //   setLoading(false);
+  // }, [dispatch]);
 
   return (
     <Container>

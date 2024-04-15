@@ -7,55 +7,62 @@ import api from "../apiService";
 import { FormProvider } from "../form";
 import { useForm } from "react-hook-form";
 import { Container, Alert, Box, Card, Stack, CardMedia, CardActionArea, Typography, CardContent } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux"
+import { getAllBook, search } from "../app/Slice";
 
 
 
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const HomePage = () => {
-  const [books, setBooks] = useState([]);
-  const [pageNum, setPageNum] = useState(1);
   const totalPage = 10;
-  const limit = 10;
 
   const [loading, setLoading] = useState(false);
-  const [query, setQuery] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const errorMessage = useSelector(state => state.book.error);
+  const pageNum = useSelector(state => state.book.pageNum);
+  const limit = useSelector(state => state.book.limit);
+  const books = useSelector(state => state.book.books);
+  console.log(errorMessage)
+  const dispatch = useDispatch();
 
   const navigate = useNavigate()
   const handleClickBook = (bookId) => {
     navigate(`/books/${bookId}`);
   };
 
-
-
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       let url = `/books?_page=${pageNum}&_limit=${limit}`;
+  //       if (query) url += `&q=${query}`;
+  //       const res = await api.get(url);
+  //       // console.log(res.data)
+  //       setBooks(res.data);
+  //       setErrorMessage("");
+  //     } catch (error) {
+  //       setErrorMessage(error.message);
+  //     }
+  //     setLoading(false);
+  //   };
+  //   fetchData();
+  // }, [pageNum, limit, query]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        let url = `/books?_page=${pageNum}&_limit=${limit}`;
-        if (query) url += `&q=${query}`;
-        const res = await api.get(url);
-        setBooks(res.data);
-        setErrorMessage("");
-      } catch (error) {
-        setErrorMessage(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [pageNum, limit, query]);
+    dispatch(getAllBook(pageNum, limit));
+  }, [dispatch])
+
   //--------------form
-  const defaultValues = {
-    searchQuery: ""
-  };
+  const defaultValues = useSelector(state => state.book.searchQuery)
   const methods = useForm({
     defaultValues,
   });
   const { handleSubmit } = methods;
+
   const onSubmit = (data) => {
-    setQuery(data.searchQuery);
+    dispatch(search(data.searchQuery));
+    // console.log(data.searchQuery)
   };
   return (
     <Container>
@@ -75,7 +82,7 @@ const HomePage = () => {
         </FormProvider>
         <PaginationBar
           pageNum={pageNum}
-          setPageNum={setPageNum}
+          // setPageNum={setPageNum}
           totalPageNum={totalPage}
         />
       </Stack>

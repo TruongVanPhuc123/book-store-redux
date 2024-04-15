@@ -4,48 +4,67 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../apiService";
 import { Container, Button, Box, Grid, Stack, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorites, getDetailBook } from "../app/Slice";
 
 
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const BookDetailPage = () => {
+
   const [loading, setLoading] = useState(false);
-  const [book, setBook] = useState(null);
-  const [addingBook, setAddingBook] = useState(false);
+
+  const book = useSelector(state => state.book.detail)
+  const dispatch = useDispatch()
+
   const params = useParams();
   const bookId = params.id;
 
   const addToReadingList = (book) => {
-    setAddingBook(book);
+    setLoading(true);
+    try {
+      dispatch(addFavorites(book));
+      toast.success("The book has been added to the reading list!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+    setLoading(false);
   };
 
-  useEffect(() => {
-    const postData = async () => {
-      if (!addingBook) return;
-      setLoading(true);
-      try {
-        await api.post(`/favorites`, addingBook);
-        toast.success("The book has been added to the reading list!");
-      } catch (error) {
-        toast.error(error.message);
-      }
-      setLoading(false);
-    };
-    postData();
-  }, [addingBook]);
+  // useEffect(() => {
+  //   const postData = async () => {
+  //     if (!addingBook) return;
+  //     setLoading(true);
+  //     try {
+  //       await api.post(`/favorites`, addingBook);
+  //       toast.success("The book has been added to the reading list!");
+  //     } catch (error) {
+  //       toast.error(error.message);
+  //     }
+  //     setLoading(false);
+  //   };
+  //   postData();
+  // }, [addingBook]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/books/${bookId}`);
-        setBook(res.data);
-      } catch (error) {
-        toast.error(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
+    // const fetchData = async () => {
+    //   setLoading(true);
+    //   try {
+    //     const res = await api.get(`/books/${bookId}`);
+    //     setBook(res.data);
+    //   } catch (error) {
+    //     toast.error(error.message);
+    //   }
+    //   setLoading(false);
+    // };
+    // fetchData();
+    setLoading(true);
+    try {
+      dispatch(getDetailBook(bookId));
+    } catch (error) {
+      toast.error(error.message);
+    }
+    setLoading(false);
   }, [bookId]);
 
   return (
