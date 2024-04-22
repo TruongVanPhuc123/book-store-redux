@@ -10,6 +10,6 @@ Exercise: Refactor the code to use Redux
 $ npm install
 ```
 
-- Run `npm run dev` to start the `json-server` on port 5000.
+- Run `npx json-server --watch src/db.json --port 5000` to start the `json-server` on port 5000.
 
 - Run `npm start` to start the React app.

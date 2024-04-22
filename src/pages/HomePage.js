@@ -3,7 +3,6 @@ import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import PaginationBar from "../components/PaginationBar";
 import SearchForm from "../components/SearchForm";
-import api from "../apiService";
 import { FormProvider } from "../form";
 import { useForm } from "react-hook-form";
 import { Container, Alert, Box, Card, Stack, CardMedia, CardActionArea, Typography, CardContent } from "@mui/material";
@@ -93,7 +92,7 @@ const HomePage = () => {
           </Box>
         ) : (
           <Stack direction="row" spacing={2} justifyContent="space-around" flexWrap="wrap">
-            {books.map((book) => (
+            {books?.map((book) => (
               <Card
                 key={book.id} onClick={() => handleClickBook(book.id)}
                 sx={{

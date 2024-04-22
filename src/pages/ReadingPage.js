@@ -3,7 +3,6 @@ import { Container, Button, Box, Card, Stack, CardMedia, CardActionArea, Typogra
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import api from "../apiService";
 import { useDispatch, useSelector } from "react-redux";
 import { getFavorites, setRemovedBook } from "../app/Slice";
 
